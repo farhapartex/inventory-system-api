@@ -3,3 +3,4 @@ env
 __pycache__
 local_settings.json
 .idea
+db.sqlite3
