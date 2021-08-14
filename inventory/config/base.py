@@ -40,10 +40,12 @@ PRE_INSTALLED_APPS = [
 
 THIRD_PARTY_APP = [
     "corsheaders",
+    "rest_framework",
+    "oauth2_provider"
 ]
 
 CUSTOM_INSTALLED_APP = [
-    "user"
+    "core",
 ]
 
 INSTALLED_APPS = PRE_INSTALLED_APPS + THIRD_PARTY_APP + CUSTOM_INSTALLED_APP
@@ -79,7 +81,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'inventory.wsgi.application'
 CORS_ALLOW_ALL_ORIGINS = True
-
+AUTH_USER_MODEL = "core.User"
 
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
@@ -129,3 +131,22 @@ STATIC_URL = '/static/'
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        "oauth2_provider.contrib.rest_framework.OAuth2Authentication",
+        "rest_framework.authentication.SessionAuthentication",
+    ),
+    "DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.AllowAny"],
+    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.LimitOffsetPagination",
+    "PAGE_SIZE": 10,
+}
+
+OAUTH2_PROVIDER = {
+    # this is the list of available scopes
+    'SCOPES': {'read': 'Read scope', 'write': 'Write scope', 'groups': 'Access to your groups'},
+    'OAUTH2_BACKEND_CLASS': 'oauth2_provider.oauth2_backends.JSONOAuthLibCore',
+    'ACCESS_TOKEN_EXPIRE_SECONDS': 36000,
+}
+
+OAUTH2_PROVIDER_APPLICATION_MODEL = 'oauth2_provider.Application'

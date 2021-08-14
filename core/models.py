@@ -1,9 +1,9 @@
 from django.db import models
 from django.contrib.auth.validators import UnicodeUsernameValidator
-from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, UserManager, Permission
+from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, UserManager, Permission, _user_has_module_perms, _user_has_perm
 from django.utils.translation import gettext_lazy as _
 from inventory.models import BaseEntity
-from user.enums.roles import RoleEnum
+from core.enums.roles import RoleEnum
 
 
 class BaseUser(BaseEntity):
@@ -44,3 +44,22 @@ class User(BaseUser, AbstractBaseUser):
     EMAIL_FIELD = 'email'
     USERNAME_FIELD = 'username'
     REQUIRED_FIELDS = ['email',]
+
+    def has_perm(self, perm, obj=None):
+        # Active superusers have all permissions.
+        if self.is_active and self.is_superuser:
+            return True
+
+        # Otherwise we need to check the backends.
+        return _user_has_perm(self, perm, obj)
+
+    def has_module_perms(self, app_label):
+        """
+        Return True if the user has any permissions in the given app label.
+        Use similar logic as has_perm(), above.
+        """
+        # Active superusers have all permissions.
+        if self.is_active and self.is_superuser:
+            return True
+
+        return _user_has_module_perms(self, app_label)
