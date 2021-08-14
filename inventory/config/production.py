@@ -1,16 +1,20 @@
 from inventory.config.base import *
 
-SECRET_KEY = 'django-insecure-m#3h^xfar_)+g=0sdferwefsdf_!gg@8r6!0iv(62iq'
+SECRET_KEY = settings_json.get("SECRET_KEY", "")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = []
 
-
+DATABASE = settings_json.get("DATABASE", {})
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',  # 'django.db.backends.mysql',
+        'NAME': DATABASE.get("name", ""),
+        'USER': DATABASE.get("user", ""),
+        'PASSWORD': DATABASE.get("password", ""),
+        'HOST': DATABASE.get("host", ""),
+        'PORT': DATABASE.get("port", "")
     }
 }
