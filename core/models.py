@@ -19,6 +19,7 @@ class BaseUser(BaseEntity):
     email = models.EmailField(_('email address'), blank=True)
     role = models.CharField(max_length=10, choices=RoleEnum.choices, blank=True, null=True)
     is_verified = models.BooleanField(default=False)
+    models.EmailField()
 
     class Meta:
         abstract = True
