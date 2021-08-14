@@ -42,7 +42,11 @@ THIRD_PARTY_APP = [
     "corsheaders",
 ]
 
-INSTALLED_APPS = PRE_INSTALLED_APPS + THIRD_PARTY_APP
+CUSTOM_INSTALLED_APP = [
+    "user"
+]
+
+INSTALLED_APPS = PRE_INSTALLED_APPS + THIRD_PARTY_APP + CUSTOM_INSTALLED_APP
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
