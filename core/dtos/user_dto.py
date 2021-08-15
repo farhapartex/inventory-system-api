@@ -56,3 +56,28 @@ class UserRegistrationSuccessDTO(BaseModel):
     success: bool = False
     message: str
 
+
+class AccountVerifyDTO(BaseModel):
+    email: str
+    code: str
+
+    @validator('email')
+    def email_validator(cls, email):
+        try:
+            email_validator = EmailValidator()
+            email_validator(email)
+        except DjangoValidationError as error:
+            raise ValueError('Please enter a valid email')
+        return email
+
+    @validator('code')
+    def code_validator(cls, code):
+        if len(code) < 0:
+            raise ValueError('Please enter a valid code')
+        return code
+
+
+class AccountVerifySuccessDTO(BaseModel):
+    message: str
+    success: bool = True
+

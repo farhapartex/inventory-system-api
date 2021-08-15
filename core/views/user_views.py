@@ -1,9 +1,9 @@
 from rest_framework import views, viewsets, status
 from rest_framework.response import Response
 from pydantic.error_wrappers import ValidationError
-from core.dtos import UserRegistrationDTO, UserRegistrationSuccessDTO
+from core.dtos import UserRegistrationDTO, UserRegistrationSuccessDTO, AccountVerifyDTO, AccountVerifySuccessDTO
 from core.dtos.error_dto import ErrorDTO
-from core.exceptions import UserExistsException
+from core.exceptions import UserExistsException, UserNotFoundException, UserAlreadyActiveException
 from core.services import UserService
 import logging
 
@@ -25,7 +25,23 @@ class UserRegistrationView(views.APIView):
             return Response(error_dto.dict(), status=status.HTTP_400_BAD_REQUEST)
         except Exception as error:
             logger.error(str(error))
-            return Response(ErrorDTO(details="System found some error").dict(), status=status.HTTP_400_BAD_REQUEST)
+            return Response(ErrorDTO(details="System found some error").dict(), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         return Response(response.dict(), status=status.HTTP_200_OK)
 
+
+class VerifyUserAccountView(views.APIView):
+    def post(self, request):
+        data = request.data
+        try:
+            acc_verify_dto = AccountVerifyDTO.parse_obj(data)
+            response: AccountVerifySuccessDTO = UserService.verify_user_account(request_data=acc_verify_dto)
+        except (UserNotFoundException, UserAlreadyActiveException) as error:
+            logger.error(str(error.details))
+            error_dto = ErrorDTO(details=error.details)
+            return Response(error_dto.dict(), status=status.HTTP_400_BAD_REQUEST)
+        except Exception as error:
+            logger.error(str(error))
+            return Response(ErrorDTO(details="System found some error").dict(),status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        return Response(response.dict(), status=status.HTTP_200_OK)

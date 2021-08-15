@@ -3,9 +3,10 @@ from random import randint
 from django.db.models import Q
 from django.db import transaction
 from pydantic.error_wrappers import ValidationError
-from core.dtos import UserRegistrationDTO, UserDTO, UserRegistrationSuccessDTO
+from core.dtos import UserRegistrationDTO, UserDTO, UserRegistrationSuccessDTO, AccountVerifyDTO, \
+    AccountVerifySuccessDTO
 from core.enums.roles import RoleEnum
-from core.exceptions import UserExistsException
+from core.exceptions import UserExistsException, UserNotFoundException, UserAlreadyActiveException
 from core.models import User, UserAuthCode
 
 
@@ -13,6 +14,11 @@ class UserService:
     @classmethod
     def _generate_random_number(cls, n: int) -> str:
         return ''.join(["{}".format(randint(0, 9)) for num in range(0, n)])
+
+    @classmethod
+    def _get_user_auth_code(cls, user: User, auth_code_dto: AccountVerifyDTO) -> UserAuthCode:
+        user_auth_code: UserAuthCode = UserAuthCode.objects.filter(user=user, code=auth_code_dto.code, is_used=False).first()
+        return user_auth_code
 
     @classmethod
     def _get_user_by_email_username(cls, identifier: str) -> User:
@@ -58,3 +64,20 @@ class UserService:
                 success=True,
                 message="Your registration is completed successfully."
             )
+
+    @classmethod
+    def verify_user_account(cls, request_data: AccountVerifyDTO) -> AccountVerifySuccessDTO:
+        instance: User = cls._get_user_by_email_username(request_data.email)
+        if instance is None:
+            raise UserNotFoundException("User already in system.")
+        if instance.is_active:
+            raise UserAlreadyActiveException("User already active")
+
+        user_auth_code: UserAuthCode = cls._get_user_auth_code(user=instance, auth_code_dto=request_data)
+        if user_auth_code is None:
+            raise UserAlreadyActiveException("User already active")
+
+        user_auth_code.is_used = True
+        user_auth_code.save()
+
+        return AccountVerifySuccessDTO(message="User account verified successfully.")
