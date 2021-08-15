@@ -1,5 +1,8 @@
-from pydantic import BaseModel, validator
+from pydantic import BaseModel, validator, Field
+from typing import Optional
 from django.core.validators import EmailValidator
+from django.core.exceptions import ValidationError as DjangoValidationError
+from rest_framework.serializers import ValidationError
 
 
 class UserRegistrationDTO(BaseModel):
@@ -10,15 +13,46 @@ class UserRegistrationDTO(BaseModel):
 
     @validator('email')
     def email_validator(cls, email):
-        email_validator = EmailValidator()
-        email_validator(email)
+        try:
+            email_validator = EmailValidator()
+            email_validator(email)
+        except DjangoValidationError as error:
+            raise ValueError('Please enter a valid email')
         return email
+
+    @validator('first_name')
+    def first_name_validator(cls, first_name):
+        if len(first_name) == 0:
+            raise ValueError('Please enter a valid first name')
+        return first_name
+
+    @validator('last_name')
+    def last_name_validator(cls, last_name):
+        if len(last_name) == 0:
+            raise ValueError('Please enter a valid last name')
+        return last_name
+
+    @validator('password')
+    def password_validator(cls, password):
+        if len(password) < 6:
+            raise ValueError('Your password length should be more then 6')
+        return password
 
 
 class UserDTO(BaseModel):
-    first_name: str
-    last_name: str
+    first_name: Optional[str] = ""
+    last_name: Optional[str] = ""
     username: str
     email: str
-    is_active: bool
-    is_stuff: bool
+    role: str
+    is_superuser: Optional[bool] = False
+    is_verified: Optional[bool] = False
+    is_active: Optional[bool] = False
+    is_staff: Optional[bool] = False
+
+
+class UserRegistrationSuccessDTO(BaseModel):
+    user: Optional[UserDTO] = None
+    success: bool = False
+    message: str
+
