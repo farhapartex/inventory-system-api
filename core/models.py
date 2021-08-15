@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, UserManager, Permission, _user_has_module_perms, _user_has_perm
 from django.utils.translation import gettext_lazy as _
-from inventory.models import BaseEntity
+from inventory.models import BaseEntity, BaseAbstractEntity
 from core.enums.roles import RoleEnum
 
 
@@ -64,3 +64,13 @@ class User(BaseUser, AbstractBaseUser):
             return True
 
         return _user_has_module_perms(self, app_label)
+
+
+class UserAuthCode(BaseAbstractEntity):
+    user = models.ForeignKey(User, related_name='users', on_delete=models.DO_NOTHING)
+    code = models.CharField(max_length=6)
+    is_used = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"{self.user.username} code is {self.code}"
+
