@@ -1,0 +1,33 @@
+name: Django application
+
+on:
+  push:
+    branches:
+    - master
+    - develop
+    - feature/*
+  pull_request:
+    branches:
+    - master
+  
+  jobs:
+    build:
+
+      runs-on: ubuntu-latest
+
+      steps:
+      - uses: actions/checkout@v1
+      - name: setup Python 3.*
+        uses: actions/setup-python@v1
+        with:
+          python-version: '3.x'
+      - name: Check Python version
+        run: python --version
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      - name: Run Migrations
+        run: python manage.py migrate
+      - name: Run unittest
+        run: python manage.py test
