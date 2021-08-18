@@ -53,7 +53,6 @@ class UserDTO(BaseModel):
 class UserMinimalDTO(BaseModel):
     first_name: Optional[str] = ""
     last_name: Optional[str] = ""
-    username: str
     email: str
 
 

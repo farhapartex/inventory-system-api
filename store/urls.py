@@ -1,7 +1,11 @@
-from django.urls import path
-
+from django.urls import path, re_path, include
+from rest_framework.routers import DefaultRouter
 from store.views import StoreAPIView
 
+router = DefaultRouter()
+
+router.register("stores", StoreAPIView, basename="store")
+
 urlpatterns = [
-    path("api/v1/stores/", StoreAPIView.as_view(), name="store"),
+    re_path(r"^api/v1/", include(router.urls)),
 ]
