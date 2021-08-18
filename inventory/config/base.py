@@ -40,8 +40,8 @@ PRE_INSTALLED_APPS = [
 
 THIRD_PARTY_APP = [
     "corsheaders",
+    "oauth2_provider",
     "rest_framework",
-    "oauth2_provider"
 ]
 
 CUSTOM_INSTALLED_APP = [
@@ -136,8 +136,9 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         "oauth2_provider.contrib.rest_framework.OAuth2Authentication",
-        "rest_framework.authentication.SessionAuthentication",
+        #"rest_framework.authentication.SessionAuthentication",
     ),
+    #'OAUTH2_BACKEND_CLASS': 'oauth2_provider.oauth2_backends.JSONOAuthLibCore',
     "DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.AllowAny"],
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.LimitOffsetPagination",
     "PAGE_SIZE": 10,
@@ -146,7 +147,7 @@ REST_FRAMEWORK = {
 OAUTH2_PROVIDER = {
     # this is the list of available scopes
     'SCOPES': {'read': 'Read scope', 'write': 'Write scope', 'groups': 'Access to your groups'},
-    'OAUTH2_BACKEND_CLASS': 'oauth2_provider.oauth2_backends.JSONOAuthLibCore',
+    #'OAUTH2_BACKEND_CLASS': 'oauth2_provider.oauth2_backends.JSONOAuthLibCore',
     'ACCESS_TOKEN_EXPIRE_SECONDS': 36000,
 }
 
