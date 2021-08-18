@@ -2,7 +2,6 @@ from pydantic import BaseModel, validator, Field
 from typing import Optional
 from django.core.validators import EmailValidator
 from django.core.exceptions import ValidationError as DjangoValidationError
-from rest_framework.serializers import ValidationError
 
 
 class UserRegistrationDTO(BaseModel):
@@ -49,6 +48,13 @@ class UserDTO(BaseModel):
     is_verified: Optional[bool] = False
     is_active: Optional[bool] = False
     is_staff: Optional[bool] = False
+
+
+class UserMinimalDTO(BaseModel):
+    first_name: Optional[str] = ""
+    last_name: Optional[str] = ""
+    username: str
+    email: str
 
 
 class UserRegistrationSuccessDTO(BaseModel):
