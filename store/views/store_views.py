@@ -1,15 +1,13 @@
-from typing import List
-
 from rest_framework import views, status, viewsets
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from pydantic.error_wrappers import ValidationError
 from core.exceptions import UserNotFoundException
-from store.dtos.store_dto import StoreListDTO, StoreCreateDTO, StoreDTO
+from store.dtos import StoreListDTO, StoreCreateDTO, StoreDTO
 from store.exceptions import StoreNotFoundException, StoreOwnerDoesNotMatch, StoreAlreadyExistsException
-from store.services.store_service import StoreService
-from core.dtos.error_dto import ErrorDTO
+from store.services import StoreService
+from core.dtos import ErrorDTO
 import logging
 
 logger = logging.getLogger(__name__)

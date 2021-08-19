@@ -12,7 +12,12 @@ from store.models import Store
 class StoreService:
     @classmethod
     def _get_store_instance(cls, owner: User, store_id: int) -> Store:
-        store = Store.get_instance({"id": store_id, "owner_id": owner.id})
+        store = Store.get_instance({"id": store_id, "owner_id": owner.id, "is_active": True, "is_deleted": False})
+        return store
+
+    @classmethod
+    def get_store_instance(cls, owner: User, store_id: int) -> Store:
+        store = cls._get_store_instance(owner=owner, store_id=store_id)
         return store
 
     @classmethod
