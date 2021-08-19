@@ -22,5 +22,12 @@ class BaseEntity(BaseAbstractEntity):
         queryset = cls.objects.filter(**filter_dict)
         return queryset
 
+    @classmethod
+    def delete_instance(cls, pk: int):
+        instance = cls.get_instance({"id": pk})
+        instance.is_active = False
+        instance.is_deleted = True
+        instance.save()
+
     class Meta:
         abstract = True

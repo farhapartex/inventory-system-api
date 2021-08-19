@@ -14,6 +14,7 @@ class Store(BaseEntity):
 
 
 class ProductCategory(BaseEntity):
+    store = models.ForeignKey(Store, related_name="categories", on_delete=models.CASCADE, null=True)
     name = models.CharField(max_length=255)
 
     def __str__(self):

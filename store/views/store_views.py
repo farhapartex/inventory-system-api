@@ -7,7 +7,7 @@ from rest_framework.response import Response
 from pydantic.error_wrappers import ValidationError
 from core.exceptions import UserNotFoundException
 from store.dtos.store_dto import StoreListDTO, StoreCreateDTO, StoreDTO
-from store.exceptions import StoreNotFoundException
+from store.exceptions import StoreNotFoundException, StoreOwnerDoesNotMatch, StoreAlreadyExistsException
 from store.services.store_service import StoreService
 from core.dtos.error_dto import ErrorDTO
 import logging
@@ -45,13 +45,28 @@ class StoreAPIView(viewsets.ViewSet):
             response = StoreService.create_store(data=store_create_dto)
         except ValidationError as error:
             return Response(error.errors(), status=status.HTTP_400_BAD_REQUEST)
-        except UserNotFoundException as error:
+        except (UserNotFoundException, StoreAlreadyExistsException) as error:
             logger.error(str(error.details))
             error_dto = ErrorDTO(details=error.details)
             return Response(error_dto.dict(), status=status.HTTP_404_NOT_FOUND)
         except Exception as error:
             logger.error(str(error))
-            return Response(ErrorDTO(details="System found some error", error="Internal Server Error", code=status.HTTP_500_INTERNAL_SERVER_ERROR).dict(), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Response(ErrorDTO(details=str(error), error="Internal Server Error", code=status.HTTP_500_INTERNAL_SERVER_ERROR).dict(), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         return Response(response.dict(), status=status.HTTP_201_CREATED)
+
+    def destroy(self, request, pk=None):
+        try:
+            store_id = pk
+            owner = request.user
+            api_request_dto = StoreService.deactivate_store(store_id=store_id, user=owner)
+        except (UserNotFoundException, StoreNotFoundException, StoreOwnerDoesNotMatch) as error:
+            logger.error(str(error.details))
+            error_dto = ErrorDTO(details=error.details, code=status.HTTP_404_NOT_FOUND)
+            return Response(error_dto.dict(), status=status.HTTP_404_NOT_FOUND)
+        except Exception as error:
+            logger.error(str(error))
+            return Response(ErrorDTO(details="System found some error", error="Internal Server Error", code=status.HTTP_500_INTERNAL_SERVER_ERROR).dict(), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        return Response(api_request_dto.dict(), status=status.HTTP_201_CREATED)
 

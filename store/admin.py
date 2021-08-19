@@ -5,7 +5,7 @@ from store.models import Store, ProductCategory, Product
 
 @admin.register(Store)
 class StoreAdmin(admin.ModelAdmin):
-    pass
+    list_display = ("id", "name", "owner", "is_active", "is_deleted")
 
 
 @admin.register(ProductCategory)

@@ -33,3 +33,7 @@ class StoreCreateSuccess(BaseModel):
     store: StoreCreateDTO
     success: bool
 
+
+class APIRequestSuccessDTO(BaseModel):
+    details: str
+    code: int = 200
