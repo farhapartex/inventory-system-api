@@ -17,7 +17,6 @@ class ProductCategoryService:
             raise StoreNotFoundException("Store does not found 2")
 
         product_categories = ProductCategory.get_filter_data({"store_id": store.id, "is_active": True, "is_deleted": False})
-        print(product_categories)
         category_list = [ProductCategoryDTO(id=category.id, store_id=category.store.id, name=category.name) for category in product_categories]
         return ProductCategoryListDTO(categories=category_list)
 

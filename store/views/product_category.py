@@ -27,6 +27,6 @@ class ProductCategoryAPIView(viewsets.ViewSet):
             logger.error(str(error.details))
             error_dto = ErrorDTO(details=error.details, code=status.HTTP_404_NOT_FOUND)
             return Response(error_dto.dict(), status=status.HTTP_404_NOT_FOUND)
-        #except Exception as error:
-            #logger.error(str(error))
-            #return Response(ErrorDTO(details=str(error), error="Internal Server Error", code=status.HTTP_500_INTERNAL_SERVER_ERROR).dict(),status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        except Exception as error:
+            logger.error(str(error))
+            return Response(ErrorDTO(details=str(error), error="Internal Server Error", code=status.HTTP_500_INTERNAL_SERVER_ERROR).dict(),status=status.HTTP_500_INTERNAL_SERVER_ERROR)
