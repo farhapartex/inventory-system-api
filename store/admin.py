@@ -10,7 +10,7 @@ class StoreAdmin(admin.ModelAdmin):
 
 @admin.register(ProductCategory)
 class ProductCategoryAdmin(admin.ModelAdmin):
-    pass
+    list_display = ("id", "name", "store")
 
 
 @admin.register(Product)

@@ -6,7 +6,7 @@ from rest_framework.response import Response
 
 from pydantic.error_wrappers import ValidationError
 from core.exceptions import UserNotFoundException
-from store.dtos import StoreListDTO, StoreCreateDTO, StoreDTO, ProductCategoryListDTO
+from store.dtos import StoreListDTO, StoreCreateDTO, StoreDTO, ProductCategoryListDTO, ProductCategoryMinimalDTO
 from store.exceptions import StoreNotFoundException, StoreOwnerDoesNotMatch, StoreAlreadyExistsException
 from store.services import ProductCategoryService
 from core.dtos.error_dto import ErrorDTO
@@ -29,4 +29,22 @@ class ProductCategoryAPIView(viewsets.ViewSet):
             return Response(error_dto.dict(), status=status.HTTP_404_NOT_FOUND)
         except Exception as error:
             logger.error(str(error))
-            return Response(ErrorDTO(details=str(error), error="Internal Server Error", code=status.HTTP_500_INTERNAL_SERVER_ERROR).dict(),status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
+            return Response(ErrorDTO(details=str(error), error="Internal Server Error", code=status_code).dict(), status=status_code)
+
+    def create(self, request):
+        try:
+            data = request.data
+            data["owner_id"] = request.user.id
+            category_dto = ProductCategoryMinimalDTO.parse_obj(data)
+            response = ProductCategoryService.create_product_category(category_dto)
+        except StoreNotFoundException as error:
+            logger.error(str(error.details))
+            error_dto = ErrorDTO(details=error.details, code=status.HTTP_404_NOT_FOUND)
+            return Response(error_dto.dict(), status=status.HTTP_404_NOT_FOUND)
+        except Exception as error:
+            logger.error(str(error))
+            status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
+            return Response(ErrorDTO(details=str(error), error="Internal Server Error", code=status_code).dict(), status=status_code)
+
+        return Response(response.dict(), status=status.HTTP_201_CREATED)
