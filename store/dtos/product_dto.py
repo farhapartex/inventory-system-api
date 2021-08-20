@@ -3,7 +3,7 @@ from typing import List
 from pydantic import BaseModel
 
 from core.models import User
-from store.dtos import StoreCreateDTO
+from store.dtos import StoreCreateDTO, StoreMinimalDTO
 
 
 class ProductCategoryDTO(BaseModel):
@@ -27,4 +27,15 @@ class ProductCategoryCreateDTO(BaseModel):
     store: StoreCreateDTO
     name: str
     is_active: bool
+
+
+class ProductShortDTO(BaseModel):
+    id: int
+    name: str
+    category: str
+
+
+class ProductListDTO(BaseModel):
+    store: StoreMinimalDTO
+    products: List[ProductShortDTO]
 

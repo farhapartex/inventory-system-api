@@ -1,14 +1,10 @@
-from typing import List
-
 from rest_framework import views, status, viewsets
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from pydantic.error_wrappers import ValidationError
 from core.exceptions import UserNotFoundException
-from store.dtos import StoreListDTO, StoreCreateDTO, StoreDTO, ProductCategoryListDTO, ProductCategoryMinimalDTO
-from store.exceptions import StoreNotFoundException, StoreOwnerDoesNotMatch, StoreAlreadyExistsException, \
-    ProductCategoryNotFoundException
+from store.dtos import ProductCategoryListDTO, ProductCategoryMinimalDTO
+from store.exceptions import StoreNotFoundException, ProductCategoryNotFoundException
 from store.services import ProductCategoryService
 from core.dtos.error_dto import ErrorDTO
 import logging
