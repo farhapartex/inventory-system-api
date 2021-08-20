@@ -39,3 +39,10 @@ class ProductListDTO(BaseModel):
     store: StoreMinimalDTO
     products: List[ProductShortDTO]
 
+
+class ProductFullDTO(BaseModel):
+    id: int
+    name: str
+    description: str
+    is_active: bool
+    is_deleted: bool

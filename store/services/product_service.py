@@ -15,3 +15,18 @@ class ProductService:
         product_dto_list = [ProductShortDTO(id=product.id, name=product.name, category=product.category.name) for product in products]
         return ProductListDTO(store=store_dto, products=product_dto_list)
 
+    @classmethod
+    def product_details(cls):
+        # TODO
+        pass
+
+    @classmethod
+    def product_update(cls):
+        # TODO
+        pass
+
+    @classmethod
+    def product_delete(cls):
+        # TODO
+        pass
+
