@@ -10,7 +10,7 @@ class StoreAdmin(admin.ModelAdmin):
 
 @admin.register(ProductCategory)
 class ProductCategoryAdmin(admin.ModelAdmin):
-    list_display = ("id", "name", "store")
+    list_display = ("id", "name", "store", "is_active", "is_deleted")
 
 
 @admin.register(Product)

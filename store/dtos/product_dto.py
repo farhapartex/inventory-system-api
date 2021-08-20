@@ -17,8 +17,9 @@ class ProductCategoryListDTO(BaseModel):
 
 
 class ProductCategoryMinimalDTO(BaseModel):
-    name: str
+    name: str = None
     owner_id: int
+    id: int = None
 
 
 class ProductCategoryCreateDTO(BaseModel):

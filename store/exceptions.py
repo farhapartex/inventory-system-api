@@ -11,3 +11,7 @@ class StoreAlreadyExistsException(CommonException):
 
 class StoreOwnerDoesNotMatch(CommonException):
     pass
+
+
+class ProductCategoryNotFoundException(CommonException):
+    pass
