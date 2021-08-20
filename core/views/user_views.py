@@ -23,9 +23,6 @@ class UserRegistrationView(views.APIView):
             logger.error(str(error.details))
             error_dto = ErrorDTO(details=error.details)
             return Response(error_dto.dict(), status=status.HTTP_400_BAD_REQUEST)
-        except Exception as error:
-            logger.error(str(error))
-            return Response(ErrorDTO(details="System found some error").dict(), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         return Response(response.dict(), status=status.HTTP_200_OK)
 
@@ -40,8 +37,5 @@ class VerifyUserAccountView(views.APIView):
             logger.error(str(error.details))
             error_dto = ErrorDTO(details=error.details)
             return Response(error_dto.dict(), status=status.HTTP_400_BAD_REQUEST)
-        except Exception as error:
-            logger.error(str(error))
-            return Response(ErrorDTO(details="System found some error").dict(),status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         return Response(response.dict(), status=status.HTTP_200_OK)

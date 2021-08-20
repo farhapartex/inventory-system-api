@@ -29,9 +29,6 @@ class StoreAPIView(viewsets.ViewSet):
             logger.error(str(error.details))
             error_dto = ErrorDTO(details=error.details, code=status.HTTP_404_NOT_FOUND)
             return Response(error_dto.dict(), status=status.HTTP_404_NOT_FOUND)
-        except Exception as error:
-            logger.error(str(error))
-            return Response(ErrorDTO(details="System found some error", error="Internal Server Error", code=status.HTTP_500_INTERNAL_SERVER_ERROR).dict(), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         return Response(store_dto.dict(), status=status.HTTP_200_OK)
 
@@ -47,9 +44,6 @@ class StoreAPIView(viewsets.ViewSet):
             logger.error(str(error.details))
             error_dto = ErrorDTO(details=error.details)
             return Response(error_dto.dict(), status=status.HTTP_404_NOT_FOUND)
-        except Exception as error:
-            logger.error(str(error))
-            return Response(ErrorDTO(details=str(error), error="Internal Server Error", code=status.HTTP_500_INTERNAL_SERVER_ERROR).dict(), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         return Response(response.dict(), status=status.HTTP_201_CREATED)
 
@@ -62,9 +56,6 @@ class StoreAPIView(viewsets.ViewSet):
             logger.error(str(error.details))
             error_dto = ErrorDTO(details=error.details, code=status.HTTP_404_NOT_FOUND)
             return Response(error_dto.dict(), status=status.HTTP_404_NOT_FOUND)
-        except Exception as error:
-            logger.error(str(error))
-            return Response(ErrorDTO(details="System found some error", error="Internal Server Error", code=status.HTTP_500_INTERNAL_SERVER_ERROR).dict(), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         return Response(api_request_dto.dict(), status=status.HTTP_201_CREATED)
 
