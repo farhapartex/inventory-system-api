@@ -3,7 +3,7 @@ from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, UserManager, Permission, _user_has_module_perms, _user_has_perm
 from django.utils.translation import gettext_lazy as _
 from inventory.models import BaseEntity, BaseAbstractEntity
-from core.enums.roles import RoleEnum
+from core.enums import RoleEnum, AccessLabelEnum
 
 
 class BaseUser(BaseEntity):
@@ -40,6 +40,7 @@ class User(BaseUser, AbstractBaseUser):
         related_query_name="user",
     )
     is_superuser = models.BooleanField(default=False)
+    access_label = models.CharField(max_length=100, choices=AccessLabelEnum.choices, default=AccessLabelEnum.READ)
     objects = UserManager()
 
     EMAIL_FIELD = 'email'

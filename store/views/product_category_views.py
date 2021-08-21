@@ -6,14 +6,15 @@ from core.exceptions import UserNotFoundException
 from store.dtos import ProductCategoryListDTO, ProductCategoryMinimalDTO
 from store.exceptions import StoreNotFoundException, ProductCategoryNotFoundException
 from store.services import ProductCategoryService
-from core.dtos.error_dto import ErrorDTO
+from core.dtos import ErrorDTO
+from core.permissions import IsOwner
 import logging
 
 logger = logging.getLogger(__name__)
 
 
 class ProductCategoryAPIView(viewsets.ViewSet):
-    permission_classes = (IsAuthenticated, )
+    permission_classes = (IsAuthenticated, IsOwner,)
 
     def list(self, request):
         try:
