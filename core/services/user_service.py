@@ -26,6 +26,14 @@ class UserService:
         return user
 
     @classmethod
+    def _create_user(cls, data: dict) -> User:
+        with transaction.atomic():
+            user = User.objects.create(**data)
+            user.save()
+            auth_code = UserAuthCode.objects.create(user=user, code=cls._generate_random_number(6))
+            return user
+
+    @classmethod
     def register_user_as_owner(cls, request_data: UserRegistrationDTO) -> UserRegistrationSuccessDTO:
         instance = cls._get_user_by_email_username(request_data.email)
         if instance:
@@ -40,30 +48,25 @@ class UserService:
             "is_active": False
         }
 
-        with transaction.atomic():
-            user = User.objects.create(**data)
-            user.set_password(request_data.password)
-            user.save()
+        user = cls._create_user(data)
 
-            auth_code = UserAuthCode.objects.create(user=user, code=cls._generate_random_number(6))
+        user_dto = UserDTO(
+            first_name=user.first_name,
+            last_name=user.last_name,
+            username=user.username,
+            email=user.email,
+            role=user.role,
+            is_staff=user.is_staff,
+            is_superuser=user.is_superuser,
+            is_verified=user.is_verified,
+            is_active=user.is_active
+        )
 
-            user_dto = UserDTO(
-                first_name=user.first_name,
-                last_name=user.last_name,
-                username=user.username,
-                email=user.email,
-                role=user.role,
-                is_staff=user.is_staff,
-                is_superuser=user.is_superuser,
-                is_verified=user.is_verified,
-                is_active=user.is_active
-            )
-
-            return UserRegistrationSuccessDTO(
-                user=user_dto,
-                success=True,
-                message="Your registration is completed successfully."
-            )
+        return UserRegistrationSuccessDTO(
+            user=user_dto,
+            success=True,
+            message="Your registration is completed successfully."
+        )
 
     @classmethod
     def verify_user_account(cls, request_data: AccountVerifyDTO) -> AccountVerifySuccessDTO:
