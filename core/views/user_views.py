@@ -16,7 +16,7 @@ class UserRegistrationView(views.APIView):
         data = request.data
         try:
             registration_dto = UserRegistrationDTO.parse_obj(data)
-            response: UserRegistrationSuccessDTO = UserService.register_user_as_customer(registration_dto)
+            response: UserRegistrationSuccessDTO = UserService.register_user_as_owner(registration_dto)
         except ValidationError as error:
             return Response(error.errors(), status=status.HTTP_400_BAD_REQUEST)
         except UserExistsException as error:

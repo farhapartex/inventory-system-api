@@ -26,7 +26,7 @@ class UserService:
         return user
 
     @classmethod
-    def register_user_as_customer(cls, request_data: UserRegistrationDTO) -> UserRegistrationSuccessDTO:
+    def register_user_as_owner(cls, request_data: UserRegistrationDTO) -> UserRegistrationSuccessDTO:
         instance = cls._get_user_by_email_username(request_data.email)
         if instance:
             raise UserExistsException("User already in system.")
@@ -36,7 +36,7 @@ class UserService:
             "last_name": request_data.last_name,
             "username": request_data.email,
             "email": request_data.email,
-            "role": RoleEnum.CUSTOMER.name,
+            "role": RoleEnum.OWNER.name,
             "is_active": False
         }
 
