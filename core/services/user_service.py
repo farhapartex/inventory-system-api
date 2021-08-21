@@ -49,6 +49,8 @@ class UserService:
         }
 
         user = cls._create_user(data)
+        user.set_password(request_data.password)
+        user.save()
 
         user_dto = UserDTO(
             first_name=user.first_name,

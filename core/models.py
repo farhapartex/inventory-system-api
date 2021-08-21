@@ -40,7 +40,7 @@ class User(BaseUser, AbstractBaseUser):
         related_query_name="user",
     )
     is_superuser = models.BooleanField(default=False)
-    access_label = models.CharField(max_length=100, choices=AccessLabelEnum.choices, default=AccessLabelEnum.READ)
+    #access_label = models.CharField(max_length=100, choices=AccessLabelEnum.choices, default=AccessLabelEnum.READ)
     objects = UserManager()
 
     EMAIL_FIELD = 'email'
