@@ -5,7 +5,7 @@ from core.models import User, UserAuthCode
 
 @admin.register(User)
 class UserAdmin(admin.ModelAdmin):
-    list_display = ("id", "username", "first_name", "last_name", "is_verified", 'is_staff', "is_superuser", "is_active")
+    list_display = ("id", "username", "first_name", "last_name", "role", "is_verified", 'is_staff', "is_superuser", "is_active")
 
 
 @admin.register(UserAuthCode)

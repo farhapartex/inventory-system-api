@@ -70,8 +70,8 @@ class UserService:
         instance: User = cls._get_user_by_email_username(request_data.email)
         if instance is None:
             raise UserNotFoundException("User already in system.")
-        if instance.is_active:
-            raise UserAlreadyActiveException("User already active")
+        if instance.is_active and instance.is_verified:
+            raise UserAlreadyActiveException("User already active and verified")
 
         user_auth_code: UserAuthCode = cls._get_user_auth_code(user=instance, auth_code_dto=request_data)
         if user_auth_code is None:
@@ -79,5 +79,9 @@ class UserService:
 
         user_auth_code.is_used = True
         user_auth_code.save()
+
+        instance.is_verified = True
+        instance.is_active = True
+        instance.save()
 
         return AccountVerifySuccessDTO(message="User account verified successfully.")

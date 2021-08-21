@@ -1,9 +1,11 @@
 from rest_framework import views, viewsets, status
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from pydantic.error_wrappers import ValidationError
 from core.dtos import UserRegistrationDTO, UserRegistrationSuccessDTO, AccountVerifyDTO, AccountVerifySuccessDTO
 from core.dtos.error_dto import ErrorDTO
 from core.exceptions import UserExistsException, UserNotFoundException, UserAlreadyActiveException
+from core.permissions import IS_OWNER
 from core.services import UserService
 import logging
 
@@ -39,3 +41,11 @@ class VerifyUserAccountView(views.APIView):
             return Response(error_dto.dict(), status=status.HTTP_400_BAD_REQUEST)
 
         return Response(response.dict(), status=status.HTTP_200_OK)
+
+
+class CreateStoreUserAPIView(views.APIView):
+    permission_classes = (IsAuthenticated, IS_OWNER, )
+
+    def post(self, request):
+        return Response(request.user.role)
+
