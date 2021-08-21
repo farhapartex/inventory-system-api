@@ -13,6 +13,14 @@ class Store(BaseEntity):
         return self.name
 
 
+class Employee(BaseEntity):
+    store = models.ForeignKey(Store, related_name="employees", on_delete=models.CASCADE)
+    user = models.ForeignKey(User, related_name="+", on_delete=models.DO_NOTHING)
+
+    def __str__(self):
+        return f"{self.store.name}"
+
+
 class ProductCategory(BaseEntity):
     store = models.ForeignKey(Store, related_name="categories", on_delete=models.CASCADE, null=True)
     name = models.CharField(max_length=255)
