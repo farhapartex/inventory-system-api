@@ -7,13 +7,13 @@ from core.dtos import UserMinimalDTO, UserDTO
 
 
 class StoreMinimalDTO(BaseModel):
-    owner: UserMinimalDTO
+    owner: UserMinimalDTO = None
     name: str
 
 
 class StoreDTO(BaseModel):
     id: int
-    owner: UserMinimalDTO
+    owner: UserMinimalDTO = None
     name: str
     is_active: bool
     is_deleted: bool

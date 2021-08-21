@@ -13,5 +13,10 @@ class StoreOwnerDoesNotMatch(CommonException):
     pass
 
 
+class EmployeeExists(CommonException):
+    pass
+
+
 class ProductCategoryNotFoundException(CommonException):
     pass
+
