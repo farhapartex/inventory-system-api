@@ -3,12 +3,15 @@ from typing import Optional
 from django.core.validators import EmailValidator
 from django.core.exceptions import ValidationError as DjangoValidationError
 
+from core.enums.roles import RoleEnum
+
 
 class UserRegistrationDTO(BaseModel):
     first_name: str
     last_name: str
     email: str
     password: str
+    role: str
 
     @validator('email')
     def email_validator(cls, email):
@@ -36,6 +39,12 @@ class UserRegistrationDTO(BaseModel):
         if len(password) < 6:
             raise ValueError('Your password length should be more then 6')
         return password
+
+    @validator('role')
+    def role_validator(cls, role):
+        if role.upper() not in RoleEnum.get_all():
+            raise ValueError('Role is not found!')
+        return role.upper()
 
 
 class UserDTO(BaseModel):

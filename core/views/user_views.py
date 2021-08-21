@@ -4,6 +4,7 @@ from rest_framework.response import Response
 from pydantic.error_wrappers import ValidationError
 from core.dtos import UserRegistrationDTO, UserRegistrationSuccessDTO, AccountVerifyDTO, AccountVerifySuccessDTO
 from core.dtos.error_dto import ErrorDTO
+from core.enums.roles import RoleEnum
 from core.exceptions import UserExistsException, UserNotFoundException, UserAlreadyActiveException
 from core.permissions import IS_OWNER
 from core.services import UserService
@@ -17,8 +18,9 @@ class UserRegistrationView(views.APIView):
     def post(self, request) -> Response:
         data = request.data
         try:
+            data['role'] = RoleEnum.OWNER.name
             registration_dto = UserRegistrationDTO.parse_obj(data)
-            response: UserRegistrationSuccessDTO = UserService.register_user_as_owner(registration_dto)
+            response: UserRegistrationSuccessDTO = UserService.create_user(registration_dto)
         except ValidationError as error:
             return Response(error.errors(), status=status.HTTP_400_BAD_REQUEST)
         except UserExistsException as error:
@@ -47,5 +49,16 @@ class CreateStoreUserAPIView(views.APIView):
     permission_classes = (IsAuthenticated, IS_OWNER, )
 
     def post(self, request):
-        return Response(request.user.role)
+        try:
+            data = request.data
+            registration_dto = UserRegistrationDTO.parse_obj(data)
+            response: UserRegistrationSuccessDTO = UserService.create_user(registration_dto)
+        except ValidationError as error:
+            return Response(error.errors(), status=status.HTTP_400_BAD_REQUEST)
+        except UserExistsException as error:
+            logger.error(str(error.details))
+            error_dto = ErrorDTO(details=error.details)
+            return Response(error_dto.dict(), status=status.HTTP_400_BAD_REQUEST)
+
+        return Response(response.dict(), status=status.HTTP_200_OK)
 

@@ -30,11 +30,11 @@ class UserService:
         with transaction.atomic():
             user = User.objects.create(**data)
             user.save()
-            auth_code = UserAuthCode.objects.create(user=user, code=cls._generate_random_number(6))
+            UserAuthCode.objects.create(user=user, code=cls._generate_random_number(6))
             return user
 
     @classmethod
-    def register_user_as_owner(cls, request_data: UserRegistrationDTO) -> UserRegistrationSuccessDTO:
+    def create_user(cls, request_data: UserRegistrationDTO) -> UserRegistrationSuccessDTO:
         instance = cls._get_user_by_email_username(request_data.email)
         if instance:
             raise UserExistsException("User already in system.")
@@ -44,7 +44,7 @@ class UserService:
             "last_name": request_data.last_name,
             "username": request_data.email,
             "email": request_data.email,
-            "role": RoleEnum.OWNER.name,
+            "role": request_data.role,
             "is_active": False
         }
 
@@ -65,7 +65,7 @@ class UserService:
         return UserRegistrationSuccessDTO(
             user=user_dto,
             success=True,
-            message="Your registration is completed successfully."
+            message="Account registration is completed successfully."
         )
 
     @classmethod

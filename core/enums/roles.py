@@ -12,3 +12,4 @@ class RoleEnum(models.TextChoices):
     @classmethod
     def get_all(cls):
         return [cls.ADMIN.value, cls.EDITOR.value, cls.SALES.value, cls.CUSTOMER.value, cls.OWNER.value]
+
