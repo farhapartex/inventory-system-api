@@ -6,7 +6,7 @@ from core.dtos import UserRegistrationDTO, UserRegistrationSuccessDTO, AccountVe
 from core.dtos.error_dto import ErrorDTO
 from core.enums.roles import RoleEnum
 from core.exceptions import UserExistsException, UserNotFoundException, UserAlreadyActiveException
-from core.permissions import IS_OWNER
+from core.permissions import IsOwner, IsAdmin
 from core.services import UserService
 import logging
 
@@ -46,7 +46,7 @@ class VerifyUserAccountView(views.APIView):
 
 
 class CreateStoreUserAPIView(views.APIView):
-    permission_classes = (IsAuthenticated, IS_OWNER, )
+    permission_classes = (IsAuthenticated, IsOwner, )
 
     def post(self, request):
         try:
