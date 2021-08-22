@@ -3,6 +3,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from core.exceptions import UserNotFoundException
+from core.permissions import IsOwner
 from store.dtos import ProductListDTO
 from store.exceptions import StoreNotFoundException, ProductCategoryNotFoundException
 from store.services import ProductService
@@ -13,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 
 class ProductAPIView(viewsets.ViewSet):
-    permission_classes = (IsAuthenticated, )
+    permission_classes = (IsAuthenticated, IsOwner)
 
     def list(self, request):
         try:

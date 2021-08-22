@@ -23,8 +23,12 @@ class UserService:
         return user_auth_code
 
     @classmethod
-    def _get_user_by_email_username(cls, identifier: str) -> User:
-        user = User.objects.filter(Q(username=identifier) | Q(email=identifier)).first()
+    def _get_user_by_email_username(cls, *, user_id: int = None, identifier: str = None) -> User:
+        if id is not None:
+            user = User.objects.filter(id=user_id, is_active=True, is_deleted=False).first()
+        else:
+            user = User.objects.filter(Q(username=identifier) | Q(email=identifier) & Q(is_active=True) & Q(is_deleted=False)).first()
+
         return user
 
     @classmethod
@@ -36,8 +40,15 @@ class UserService:
             return user
 
     @classmethod
+    def get_user_instance(cls, *, user_id: int = None, identifier: str = None) -> User:
+        user = cls._get_user_by_email_username(user_id=user_id, identifier=identifier)
+        if user is None:
+            raise UserNotFoundException("User does not exists")
+        return user
+
+    @classmethod
     def create_user(cls, request: HttpRequest, request_data: UserRegistrationDTO) -> UserRegistrationSuccessDTO:
-        instance = cls._get_user_by_email_username(request_data.email)
+        instance = cls._get_user_by_email_username(identifier=request_data.email)
         if instance:
             raise UserExistsException("User already in system.")
 
@@ -77,9 +88,8 @@ class UserService:
 
     @classmethod
     def verify_user_account(cls, request_data: AccountVerifyDTO) -> AccountVerifySuccessDTO:
-        instance: User = cls._get_user_by_email_username(request_data.email)
-        if instance is None:
-            raise UserNotFoundException("User already in system.")
+        instance: User = cls.get_user_instance(identifier=request_data.email)
+
         if instance.is_active and instance.is_verified:
             raise UserAlreadyActiveException("User already active and verified")
 
