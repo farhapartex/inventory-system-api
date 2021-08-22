@@ -9,7 +9,7 @@ from core.dtos import UserRegistrationDTO, UserDTO, UserRegistrationSuccessDTO, 
 from core.enums.roles import RoleEnum
 from core.exceptions import UserExistsException, UserNotFoundException, UserAlreadyActiveException
 from core.models import User, UserAuthCode
-from store.signals.handlers import create_store_employee_handler, test_handler
+from store.signals import trigger_create_employee
 
 
 class UserService:
@@ -55,7 +55,7 @@ class UserService:
         user.save()
 
         if request.user.role == RoleEnum.OWNER.name:
-            create_store_employee_handler.send(sender=user.__class__, owner=request.user, store=request.user.store)
+            trigger_create_employee.send(sender=user.__class__, request=request, employee=user, store=request.user.store)
 
         user_dto = UserDTO(
             first_name=user.first_name,
