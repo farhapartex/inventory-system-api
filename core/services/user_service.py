@@ -2,12 +2,14 @@ from random import randint
 
 from django.db.models import Q
 from django.db import transaction
+from django.http import HttpRequest
 from pydantic.error_wrappers import ValidationError
 from core.dtos import UserRegistrationDTO, UserDTO, UserRegistrationSuccessDTO, AccountVerifyDTO, \
     AccountVerifySuccessDTO
 from core.enums.roles import RoleEnum
 from core.exceptions import UserExistsException, UserNotFoundException, UserAlreadyActiveException
 from core.models import User, UserAuthCode
+from store.signals.handlers import create_store_employee_handler, test_handler
 
 
 class UserService:
@@ -34,7 +36,7 @@ class UserService:
             return user
 
     @classmethod
-    def create_user(cls, request_data: UserRegistrationDTO) -> UserRegistrationSuccessDTO:
+    def create_user(cls, request: HttpRequest, request_data: UserRegistrationDTO) -> UserRegistrationSuccessDTO:
         instance = cls._get_user_by_email_username(request_data.email)
         if instance:
             raise UserExistsException("User already in system.")
@@ -51,6 +53,9 @@ class UserService:
         user = cls._create_user(data)
         user.set_password(request_data.password)
         user.save()
+
+        if request.user.role == RoleEnum.OWNER.name:
+            create_store_employee_handler.send(sender=user.__class__, owner=request.user, store=request.user.store)
 
         user_dto = UserDTO(
             first_name=user.first_name,

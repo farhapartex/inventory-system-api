@@ -5,8 +5,8 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-class RequestExceptionMiddleware(MiddlewareMixin):
-
-    def process_exception(self, request, exception):
-        logger.error(str(exception))
-        return JsonResponse({"details": "System found some error", "error": "Internal server error"}, status=500)
+# class RequestExceptionMiddleware(MiddlewareMixin):
+#
+#     def process_exception(self, request, exception):
+#         logger.error(str(exception))
+#         return JsonResponse({"details": "System found some error", "error": "Internal server error"}, status=500)

@@ -52,7 +52,7 @@ class CreateStoreUserAPIView(views.APIView):
         try:
             data = request.data
             registration_dto = UserRegistrationDTO.parse_obj(data)
-            response: UserRegistrationSuccessDTO = UserService.create_user(registration_dto)
+            response: UserRegistrationSuccessDTO = UserService.create_user(request, registration_dto)
         except ValidationError as error:
             return Response(error.errors(), status=status.HTTP_400_BAD_REQUEST)
         except UserExistsException as error:

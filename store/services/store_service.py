@@ -1,9 +1,9 @@
 from django.db import transaction
 
-from core.dtos import UserDTO, UserMinimalDTO
+from core.dtos import UserMinimalDTO
 from core.exceptions import UserNotFoundException
 from core.models import User
-from store.dtos.store_dto import StoreMinimalDTO, StoreListDTO, StoreCreateDTO, StoreCreateSuccess, StoreDTO, \
+from store.dtos.store_dto import StoreListDTO, StoreCreateDTO, StoreCreateSuccess, StoreDTO, \
     APIRequestSuccessDTO
 from store.exceptions import StoreNotFoundException, StoreOwnerDoesNotMatch, StoreAlreadyExistsException
 from store.models import Store
