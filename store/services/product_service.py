@@ -1,4 +1,5 @@
 from django.http import HttpRequest
+from django.db import transaction
 from core.dtos import UserMinimalDTO
 from core.models import User
 from store.dtos import StoreMinimalDTO, ProductShortDTO, ProductListDTO, ProductCreateDTO
@@ -17,9 +18,12 @@ class ProductService:
         return ProductListDTO(store=store_dto, products=product_dto_list)
 
     @classmethod
-    def product_create(cls, *, request: HttpRequest, request_data: ProductCreateDTO):
+    def create_product(cls, *, request: HttpRequest, request_data: ProductCreateDTO) -> ProductShortDTO:
         store = StoreService.get_store_instance(owner=request.user)
-        product = ProductCategoryService.get_product_category_by_id(category_id=request_data.category_id)
+        category = ProductCategoryService.get_product_category_by_id(category_id=request_data.category_id)
+        with transaction.atomic():
+            product = Product.objects.create(store=store, name=request_data.name, description=request_data.description, category=category)
+            return ProductShortDTO(id=product.id, name=product.name, category=product.category.name)
 
     @classmethod
     def product_details(cls):

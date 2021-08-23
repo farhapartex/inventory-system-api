@@ -20,4 +20,4 @@ class ProductCategoryAdmin(admin.ModelAdmin):
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
-    pass
+    list_display = ("id", "name", "store", "is_active", "is_deleted")

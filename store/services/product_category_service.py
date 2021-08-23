@@ -1,4 +1,4 @@
-from types import Union
+from typing import Union
 
 from django.db import transaction
 from core.exceptions import UserNotFoundException
@@ -18,7 +18,7 @@ class ProductCategoryService:
         # single category need only primary key, store id may fetch more than one category.
         filter_data = {"is_active": True, "is_deleted": False}
         filter_data.update({"id": category_id})
-        category = ProductCategory.get_instance(**filter_data)
+        category = ProductCategory.get_instance(filter_data)
         return category
 
     @classmethod

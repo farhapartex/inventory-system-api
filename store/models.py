@@ -32,7 +32,7 @@ class ProductCategory(BaseEntity):
 class Product(BaseEntity):
     store = models.ForeignKey(Store, related_name="products", on_delete=models.CASCADE)
     name = models.CharField(max_length=255)
-    description = models.TextField()
+    description = models.TextField(null=True, blank=True)
     category = models.ForeignKey(ProductCategory, related_name="products", on_delete=models.DO_NOTHING)
 
     def __str__(self):
