@@ -47,7 +47,8 @@ THIRD_PARTY_APP = [
 
 CUSTOM_INSTALLED_APP = [
     "core",
-    "store"
+    "store",
+    "invoice",
 ]
 
 INSTALLED_APPS = PRE_INSTALLED_APPS + THIRD_PARTY_APP + CUSTOM_INSTALLED_APP
