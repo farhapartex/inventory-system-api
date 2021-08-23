@@ -1,6 +1,6 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
-from inventory.models import BaseEntity, BaseAbstractEntity
+from inventory.models import BaseEntity
 from core.models import User
 # Create your models here.
 
