@@ -92,7 +92,13 @@ class ProductService:
         return APIRequestSuccessDTO(details="Product updates successfully")
 
     @classmethod
-    def product_delete(cls):
-        # TODO
-        pass
+    def product_delete(cls, *, request: HttpRequest, product_id: int) -> APIRequestSuccessDTO:
+        logger.info("Started product delete operation")
+        product = cls.get_product(product_id=product_id)
+        owner = product.store.owner
+        if owner.id != request.user.id:
+            raise ProductOwnerDoesNotMatchException("Product owner does not match")
+
+        product.delete_instance(pk=product.id)
+        return APIRequestSuccessDTO(details="Product deleted successfully")
 

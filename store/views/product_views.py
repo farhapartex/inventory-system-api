@@ -56,3 +56,12 @@ class ProductAPIView(viewsets.ViewSet):
             error_dto = ErrorDTO(details=error.details, code=status.HTTP_404_NOT_FOUND)
             return Response(error_dto.dict(), status=status.HTTP_404_NOT_FOUND)
 
+    def destroy(self, request, pk=None):
+        try:
+            response: APIRequestSuccessDTO = ProductService.product_delete(request=request, product_id=pk)
+            return Response(response.dict(), status=status.HTTP_200_OK)
+        except (ProductNotFoundException, ProductOwnerDoesNotMatchException) as error:
+            logger.error(str(error.details))
+            error_dto = ErrorDTO(details=error.details, code=status.HTTP_404_NOT_FOUND)
+            return Response(error_dto.dict(), status=status.HTTP_404_NOT_FOUND)
+
