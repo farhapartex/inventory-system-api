@@ -76,7 +76,6 @@ class ProductService:
     @classmethod
     def product_update(cls, *, request: HttpRequest, data: ProductCreateUpdateDTO) -> APIRequestSuccessDTO:
         logger.info("Started product update")
-        print(data)
         product = cls.get_product(product_id=data.id)
         owner = product.store.owner
         if owner.id != request.user.id:

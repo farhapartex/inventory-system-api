@@ -39,6 +39,7 @@ PRE_INSTALLED_APPS = [
 ]
 
 THIRD_PARTY_APP = [
+    "drf_yasg",
     "corsheaders",
     "oauth2_provider",
     "rest_framework",
