@@ -27,7 +27,7 @@ class ProductAPIView(viewsets.ViewSet):
     def create(self, request):
         try:
             request_data = ProductCreateDTO.parse_obj(request.data)
-            product: ProductShortDTO = ProductService.create_product(request=request, request_data=request_data)
+            product: ProductShortDTO = ProductService.create_product(request=request, data=request_data)
             return Response(product.dict(), status=status.HTTP_201_CREATED)
         except (StoreNotFoundException, ProductCategoryNotFoundException) as error:
             logger.error(str(error.details))

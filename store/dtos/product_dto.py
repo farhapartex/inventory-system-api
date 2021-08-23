@@ -1,3 +1,4 @@
+import decimal
 from typing import List
 
 from pydantic import BaseModel
@@ -52,3 +53,6 @@ class ProductCreateDTO(BaseModel):
     name: str
     description: str = None
     category_id: int
+    price: float
+    selling_price: float = None
+    stock_amount: int

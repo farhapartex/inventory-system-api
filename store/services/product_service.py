@@ -18,11 +18,14 @@ class ProductService:
         return ProductListDTO(store=store_dto, products=product_dto_list)
 
     @classmethod
-    def create_product(cls, *, request: HttpRequest, request_data: ProductCreateDTO) -> ProductShortDTO:
+    def create_product(cls, *, request: HttpRequest, data: ProductCreateDTO) -> ProductShortDTO:
         store = StoreService.get_store_instance(owner=request.user)
-        category = ProductCategoryService.get_product_category_by_id(category_id=request_data.category_id)
+        category = ProductCategoryService.get_product_category_by_id(category_id=data.category_id)
         with transaction.atomic():
-            product = Product.objects.create(store=store, name=request_data.name, description=request_data.description, category=category)
+            selling_price = data.selling_price
+            if selling_price is None:
+                selling_price = data.price
+            product = Product.objects.create(store=store, name=data.name, description=data.description, category=category, price=data.price, selling_price=selling_price, stock_amount=data.stock_amount)
             return ProductShortDTO(id=product.id, name=product.name, category=product.category.name)
 
     @classmethod
