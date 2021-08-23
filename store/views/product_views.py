@@ -3,8 +3,8 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from core.permissions import IsOwner
-from store.dtos import ProductListDTO, ProductCreateDTO, ProductShortDTO
-from store.exceptions import StoreNotFoundException, ProductCategoryNotFoundException
+from store.dtos import ProductListDTO, ProductCreateDTO, ProductShortDTO, ProductDTO
+from store.exceptions import StoreNotFoundException, ProductCategoryNotFoundException, ProductNotFoundException
 from store.services import ProductService
 from core.dtos.error_dto import ErrorDTO
 import logging
@@ -30,6 +30,15 @@ class ProductAPIView(viewsets.ViewSet):
             product: ProductShortDTO = ProductService.create_product(request=request, data=request_data)
             return Response(product.dict(), status=status.HTTP_201_CREATED)
         except (StoreNotFoundException, ProductCategoryNotFoundException) as error:
+            logger.error(str(error.details))
+            error_dto = ErrorDTO(details=error.details, code=status.HTTP_404_NOT_FOUND)
+            return Response(error_dto.dict(), status=status.HTTP_404_NOT_FOUND)
+
+    def retrieve(self, request, pk=None):
+        try:
+            product: ProductDTO = ProductService.product_details(request=request, product_id=pk)
+            return Response(product.dict(), status=status.HTTP_200_OK)
+        except ProductNotFoundException as error:
             logger.error(str(error.details))
             error_dto = ErrorDTO(details=error.details, code=status.HTTP_404_NOT_FOUND)
             return Response(error_dto.dict(), status=status.HTTP_404_NOT_FOUND)

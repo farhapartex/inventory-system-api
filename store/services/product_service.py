@@ -2,12 +2,26 @@ from django.http import HttpRequest
 from django.db import transaction
 from core.dtos import UserMinimalDTO
 from core.models import User
-from store.dtos import StoreMinimalDTO, ProductShortDTO, ProductListDTO, ProductCreateDTO
+from store.dtos import StoreMinimalDTO, ProductShortDTO, ProductListDTO, ProductCreateDTO, ProductDTO
+from store.exceptions import ProductNotFoundException
 from store.models import Product
 from store.services import StoreService, ProductCategoryService
 
 
 class ProductService:
+    @classmethod
+    def _get_single_product(cls, product_id: int) -> Product:
+        # For a single specific product must need a primary key
+        product = Product.get_instance({"id": product_id, "is_active": True, "is_deleted": False})
+        return product
+
+    @classmethod
+    def get_product(cls, product_id: int):
+        product = cls._get_single_product(product_id=product_id)
+        if product is None:
+            raise ProductNotFoundException("Product not found")
+        return product
+
     @classmethod
     def get_product_list(cls, *, owner: User) -> ProductListDTO:
         store = StoreService.get_store_instance(owner=owner)
@@ -29,9 +43,22 @@ class ProductService:
             return ProductShortDTO(id=product.id, name=product.name, category=product.category.name)
 
     @classmethod
-    def product_details(cls):
-        # TODO
-        pass
+    def product_details(cls, *, request: HttpRequest, product_id: int) -> ProductDTO:
+        product = cls.get_product(product_id=product_id)
+        owner = product.store.owner
+        user_dto = UserMinimalDTO(first_name=owner.first_name, last_name=owner.last_name, email=owner.email)
+        store_dto = StoreMinimalDTO(owner=user_dto, name=product.store.name)
+        return ProductDTO(
+            store=store_dto,
+            name=product.name,
+            description=product.description,
+            category_id=product.category.id,
+            price=product.price,
+            selling_price=product.selling_price,
+            stock_amount=product.stock_amount,
+            is_active=product.is_active,
+            is_deleted=product.is_deleted
+        )
 
     @classmethod
     def product_update(cls):

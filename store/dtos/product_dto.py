@@ -56,3 +56,16 @@ class ProductCreateDTO(BaseModel):
     price: float
     selling_price: float = None
     stock_amount: int
+
+
+class ProductDTO(BaseModel):
+    store: StoreMinimalDTO
+    name: str
+    description: str = None
+    category_id: int
+    price: float
+    selling_price: float = None
+    stock_amount: int
+    is_active: bool
+    is_deleted: bool
+

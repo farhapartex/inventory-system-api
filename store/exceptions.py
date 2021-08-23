@@ -20,3 +20,6 @@ class EmployeeExists(CommonException):
 class ProductCategoryNotFoundException(CommonException):
     pass
 
+
+class ProductNotFoundException(CommonException):
+    pass
