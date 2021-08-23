@@ -34,6 +34,9 @@ class Product(BaseEntity):
     name = models.CharField(max_length=255)
     description = models.TextField(null=True, blank=True)
     category = models.ForeignKey(ProductCategory, related_name="products", on_delete=models.DO_NOTHING)
+    price = models.DecimalField(max_digits=12, decimal_places=2, null=True)
+    selling_price = models.DecimalField(max_digits=12, decimal_places=2, null=True)
+    stock_amount = models.IntegerField(default=0)
 
     def __str__(self):
         return self.name
