@@ -1,8 +1,9 @@
+from django.http import HttpRequest
 from core.dtos import UserMinimalDTO
 from core.models import User
-from store.dtos import StoreMinimalDTO, ProductShortDTO, ProductListDTO
+from store.dtos import StoreMinimalDTO, ProductShortDTO, ProductListDTO, ProductCreateDTO
 from store.models import Product
-from store.services import StoreService
+from store.services import StoreService, ProductCategoryService
 
 
 class ProductService:
@@ -14,6 +15,11 @@ class ProductService:
 
         product_dto_list = [ProductShortDTO(id=product.id, name=product.name, category=product.category.name) for product in products]
         return ProductListDTO(store=store_dto, products=product_dto_list)
+
+    @classmethod
+    def product_create(cls, *, request: HttpRequest, request_data: ProductCreateDTO):
+        store = StoreService.get_store_instance(owner=request.user)
+        product = ProductCategoryService.get_product_category_by_id(category_id=request_data.category_id)
 
     @classmethod
     def product_details(cls):

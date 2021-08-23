@@ -46,3 +46,9 @@ class ProductFullDTO(BaseModel):
     description: str
     is_active: bool
     is_deleted: bool
+
+
+class ProductCreateDTO(BaseModel):
+    name: str
+    description: str = None
+    category_id: int

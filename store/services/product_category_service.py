@@ -1,3 +1,5 @@
+from types import Union
+
 from django.db import transaction
 from core.exceptions import UserNotFoundException
 from core.models import User
@@ -10,6 +12,21 @@ from store.models import ProductCategory
 
 
 class ProductCategoryService:
+
+    @classmethod
+    def _get_product_category_by_id(cls, *, category_id=None) -> Union[ProductCategory, None]:
+        # single category need only primary key, store id may fetch more than one category.
+        filter_data = {"is_active": True, "is_deleted": False}
+        filter_data.update({"id": category_id})
+        category = ProductCategory.get_instance(**filter_data)
+        return category
+
+    @classmethod
+    def get_product_category_by_id(cls, *, category_id=None) -> Union[ProductCategory, None]:
+        category = cls._get_product_category_by_id(category_id=category_id)
+        if category is None:
+            raise ProductCategoryNotFoundException("Product category not found.")
+        return category
 
     @classmethod
     def get_category_list(cls, owner: User) -> ProductCategoryListDTO:
@@ -35,9 +52,7 @@ class ProductCategoryService:
         owner = UserService.get_user_instance(user_id=data.owner_id)
         store = StoreService.get_store_instance(owner=owner)
 
-        category = ProductCategory.get_instance({"id": data.id, "store_id": store.id, "is_active": True, "is_deleted": False})
-        if category is None:
-            raise ProductCategoryNotFoundException("Category does not found")
+        category = cls.get_product_category_by_id(category_id=data.id)
         category.delete_instance(pk=data.id)
 
         return APIRequestSuccessDTO(details="Category deleted!", code=200)
