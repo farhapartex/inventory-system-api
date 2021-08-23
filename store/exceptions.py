@@ -23,3 +23,8 @@ class ProductCategoryNotFoundException(CommonException):
 
 class ProductNotFoundException(CommonException):
     pass
+
+
+class ProductOwnerDoesNotMatchException(CommonException):
+    pass
+

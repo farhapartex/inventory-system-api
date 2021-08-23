@@ -49,16 +49,19 @@ class ProductFullDTO(BaseModel):
     is_deleted: bool
 
 
-class ProductCreateDTO(BaseModel):
-    name: str
+class ProductCreateUpdateDTO(BaseModel):
+    id: int = None
+    name: str = None
     description: str = None
-    category_id: int
-    price: float
+    category_id: int = None
+    price: float = None
     selling_price: float = None
-    stock_amount: int
+    stock_amount: int = None
+    is_active: bool = None
 
 
 class ProductDTO(BaseModel):
+    id: int
     store: StoreMinimalDTO
     name: str
     description: str = None

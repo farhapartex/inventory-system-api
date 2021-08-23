@@ -1,19 +1,28 @@
+from decimal import Decimal
 from django.http import HttpRequest
 from django.db import transaction
 from core.dtos import UserMinimalDTO
 from core.models import User
-from store.dtos import StoreMinimalDTO, ProductShortDTO, ProductListDTO, ProductCreateDTO, ProductDTO
-from store.exceptions import ProductNotFoundException
+from store.dtos import StoreMinimalDTO, ProductShortDTO, ProductListDTO, ProductCreateUpdateDTO, ProductDTO, \
+    APIRequestSuccessDTO
+from store.exceptions import ProductNotFoundException, ProductOwnerDoesNotMatchException
 from store.models import Product
 from store.services import StoreService, ProductCategoryService
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class ProductService:
     @classmethod
     def _get_single_product(cls, product_id: int) -> Product:
         # For a single specific product must need a primary key
-        product = Product.get_instance({"id": product_id, "is_active": True, "is_deleted": False})
+        product = Product.get_instance({"id": product_id, "is_deleted": False})
         return product
+
+    @classmethod
+    def _get_products(cls, filter_data:dict):
+        return Product.get_filter_data(filter_data)
 
     @classmethod
     def get_product(cls, product_id: int):
@@ -32,7 +41,7 @@ class ProductService:
         return ProductListDTO(store=store_dto, products=product_dto_list)
 
     @classmethod
-    def create_product(cls, *, request: HttpRequest, data: ProductCreateDTO) -> ProductShortDTO:
+    def create_product(cls, *, request: HttpRequest, data: ProductCreateUpdateDTO) -> ProductShortDTO:
         store = StoreService.get_store_instance(owner=request.user)
         category = ProductCategoryService.get_product_category_by_id(category_id=data.category_id)
         with transaction.atomic():
@@ -46,9 +55,13 @@ class ProductService:
     def product_details(cls, *, request: HttpRequest, product_id: int) -> ProductDTO:
         product = cls.get_product(product_id=product_id)
         owner = product.store.owner
+        if owner.id != request.user.id:
+            raise ProductOwnerDoesNotMatchException("Product owner does not match")
+
         user_dto = UserMinimalDTO(first_name=owner.first_name, last_name=owner.last_name, email=owner.email)
         store_dto = StoreMinimalDTO(owner=user_dto, name=product.store.name)
         return ProductDTO(
+            id=product.id,
             store=store_dto,
             name=product.name,
             description=product.description,
@@ -61,9 +74,23 @@ class ProductService:
         )
 
     @classmethod
-    def product_update(cls):
-        # TODO
-        pass
+    def product_update(cls, *, request: HttpRequest, data: ProductCreateUpdateDTO) -> APIRequestSuccessDTO:
+        logger.info("Started product update")
+        print(data)
+        product = cls.get_product(product_id=data.id)
+        owner = product.store.owner
+        if owner.id != request.user.id:
+            raise ProductOwnerDoesNotMatchException("Product owner does not match")
+
+        product.name = data.name if data.name else product.name
+        product.description = data.description if data.description else product.name
+        product.price = data.price if data.price else product.price
+        product.selling_price = Decimal(data.selling_price) if data.selling_price else product.selling_price
+        product.stock_amount = data.stock_amount if data.stock_amount else product.stock_amount
+        product.is_active = data.is_active if data.is_active is not None else product.is_active
+        product.save()
+
+        return APIRequestSuccessDTO(details="Product updates successfully")
 
     @classmethod
     def product_delete(cls):
