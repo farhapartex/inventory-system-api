@@ -1,7 +1,12 @@
+from django.http import HttpRequest
+
+from invoice.dtos import InvoiceCreateDTO
+
+
 class InvoiceService:
     @classmethod
-    def create_invoice(cls):
-        pass
+    def create_invoice(cls, *, request: HttpRequest, data: InvoiceCreateDTO):
+        user = request.user
 
     @classmethod
     def retrieve_invoice(cls):
