@@ -11,7 +11,7 @@ class Invoice(BaseEntity):
     bill_from = models.TextField()
     bill_to = models.TextField()
     date = models.DateField()
-    amount = models.DecimalField(max_digits=12, decimal_places=2)
+    amount = models.DecimalField(max_digits=12, decimal_places=2, default=0)
     is_paid = models.BooleanField(default=False)
     paid_on = models.DateField(null=True)
     created_by = models.ForeignKey(User, related_name="+", null=True, on_delete=models.DO_NOTHING)
