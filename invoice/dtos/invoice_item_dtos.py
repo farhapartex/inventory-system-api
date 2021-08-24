@@ -7,3 +7,8 @@ class InvoiceItemCreateDTO(BaseModel):
     price: float
 
 
+class InvoiceItemMinimalDTO(BaseModel):
+    quantity: int
+    price: float
+    product: str
+

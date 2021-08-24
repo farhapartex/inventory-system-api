@@ -1,11 +1,13 @@
-from rest_framework import viewsets, views
+from rest_framework import viewsets, views, status
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 
+from core.dtos import ErrorDTO
 from invoice.dtos import InvoiceCreateDTO
 import logging
 
 from invoice.services import InvoiceService
+from store.exceptions import ProductNotFoundException
 
 logger = logging.getLogger(__name__)
 
@@ -13,12 +15,15 @@ logger = logging.getLogger(__name__)
 class InvoiceAPIViewSet(viewsets.ViewSet):
     permission_classes = (IsAuthenticated,)
 
-    def create(self, request):
+    def create(self, request) -> Response:
         try:
             data = request.data
             invoice_create_dto = InvoiceCreateDTO.parse_obj(data)
-            InvoiceService.create_invoice(request=request, data=invoice_create_dto)
-            return Response(invoice_create_dto.dict(), status=201)
-        except Exception as error:
-            logger.error(str(error))
+            response = InvoiceService.create_invoice(request=request, data=invoice_create_dto)
+        except (ProductNotFoundException, ) as error:
+            logger.error(str(error.details))
+            error_dto = ErrorDTO(details=error.details)
+            return Response(error_dto.dict(), status=status.HTTP_404_NOT_FOUND)
+
+        return Response(response.dict(), status=status.HTTP_201_CREATED)
 
