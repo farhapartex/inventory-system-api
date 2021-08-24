@@ -21,8 +21,12 @@ class ProductService:
         return product
 
     @classmethod
-    def _get_products(cls, filter_data:dict):
+    def _get_products(cls, filter_data: dict):
         return Product.get_filter_data(filter_data)
+
+    @classmethod
+    def get_products(cls, filter_data: dict):
+        return cls._get_products(filter_data=filter_data)
 
     @classmethod
     def get_product(cls, product_id: int):
