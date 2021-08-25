@@ -12,6 +12,6 @@ logger = logging.getLogger(__name__)
 @receiver(trigger_create_employee, sender=User)
 def create_store_employee_handler(request: HttpRequest, employee: User, store: Store, **kwargs):
     logger.critical("Employee is creating")
-    Employee.objects.create(user=employee, store=store)
+    Employee.objects.create(user=employee, store=store, owner=request.user)
     logger.critical("Employee created!")
 

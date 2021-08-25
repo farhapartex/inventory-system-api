@@ -16,6 +16,7 @@ class Store(BaseEntity):
 class Employee(BaseEntity):
     store = models.ForeignKey(Store, related_name="employees", on_delete=models.CASCADE)
     user = models.ForeignKey(User, related_name="+", on_delete=models.DO_NOTHING)
+    owner = models.ForeignKey(User, related_name="+", on_delete=models.CASCADE, null=True)
 
     def __str__(self):
         return f"{self.store.name}"
