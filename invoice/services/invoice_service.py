@@ -3,11 +3,13 @@ from django.utils import timezone
 from django.db import transaction
 
 from core.dtos import UserMinimalDTO
+from core.enums import RoleEnum
 from invoice.dtos import InvoiceCreateDTO, InvoiceCreateSuccessDTO, InvoiceItemMinimalDTO
 from invoice.models import Invoice
 from invoice.services.invoice_item_service import InvoiceItemService
 from invoice.signals.signal import trigger_create_invoice_item_handler
 from store.exceptions import ProductNotFoundException
+from store.models import Employee
 from store.services import ProductService
 
 
@@ -27,11 +29,18 @@ class InvoiceService:
     @classmethod
     def create_invoice(cls, *, request: HttpRequest, data: InvoiceCreateDTO) -> InvoiceCreateSuccessDTO:
         user = request.user
+        store = None
+        if user.role == RoleEnum.OWNER.name:
+            store = user.store
+        elif user.role == RoleEnum.SALES.name:
+            employee = Employee.objects.filter(user=user).first()
+            store = employee.store
         request_data = {
             "invoice_number": cls._get_unique_invoice_number(),
             "bill_to": data.bill_to,
             "date": data.date,
             "bill_from": data.bill_from,
+            "store": store,
             "created_by": user
         }
         product_ids = [item.product_id for item in data.items]
