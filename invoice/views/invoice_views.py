@@ -27,3 +27,7 @@ class InvoiceAPIViewSet(viewsets.ViewSet):
 
         return Response(response.dict(), status=status.HTTP_201_CREATED)
 
+    def list(self, request):
+        response = InvoiceService.invoice_list(request=request)
+        return Response(response.dict(), status=status.HTTP_200_OK)
+

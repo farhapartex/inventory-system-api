@@ -5,7 +5,7 @@ from invoice.views.invoice_views import InvoiceAPIViewSet
 
 router = DefaultRouter()
 
-router.register("invoice", InvoiceAPIViewSet, basename="invoice")
+router.register("invoices", InvoiceAPIViewSet, basename="invoice")
 
 
 urlpatterns = [
