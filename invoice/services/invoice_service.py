@@ -3,11 +3,15 @@ from django.utils import timezone
 from django.db import transaction
 
 from core.dtos import UserMinimalDTO
-from invoice.dtos import InvoiceCreateDTO, InvoiceCreateSuccessDTO, InvoiceItemMinimalDTO
+from core.enums import RoleEnum
+from invoice.dtos import InvoiceCreateDTO, InvoiceCreateSuccessDTO, InvoiceItemMinimalDTO, InvoiceListDTO, \
+    InvoiceMinimalDTO
 from invoice.models import Invoice
 from invoice.services.invoice_item_service import InvoiceItemService
 from invoice.signals.signal import trigger_create_invoice_item_handler
+from store.dtos import StoreMinimalDTO
 from store.exceptions import ProductNotFoundException
+from store.models import Employee
 from store.services import ProductService
 
 
@@ -27,11 +31,18 @@ class InvoiceService:
     @classmethod
     def create_invoice(cls, *, request: HttpRequest, data: InvoiceCreateDTO) -> InvoiceCreateSuccessDTO:
         user = request.user
+        store = None
+        if user.role == RoleEnum.OWNER.name:
+            store = user.store
+        elif user.role == RoleEnum.SALES.name:
+            employee = Employee.objects.filter(user=user).first()
+            store = employee.store
         request_data = {
             "invoice_number": cls._get_unique_invoice_number(),
             "bill_to": data.bill_to,
             "date": data.date,
             "bill_from": data.bill_from,
+            "store": store,
             "created_by": user
         }
         product_ids = [item.product_id for item in data.items]
@@ -65,8 +76,22 @@ class InvoiceService:
         pass
 
     @classmethod
-    def invoice_list(cls):
-        pass
+    def invoice_list(cls, *, request: HttpRequest) -> InvoiceListDTO:
+        user = request.user
+        if user.role == RoleEnum.OWNER.name:
+            store = user.store
+        elif user.role == RoleEnum.SALES.name:
+            employee = Employee.objects.filter(user=user).first()
+            store = employee.store
+
+        invoices = Invoice.get_filter_data({"store": store, "created_by": user})
+        store_dto = StoreMinimalDTO(name=store.name)
+        invoice_dto_list = []
+        for invoice in invoices:
+            invoice_dto = InvoiceMinimalDTO(total_products=invoice.invoice_items.count(), amount=invoice.amount, is_paid=invoice.is_paid, date=invoice.date, paid_on=invoice.paid_on)
+            invoice_dto_list.append(invoice_dto)
+
+        return InvoiceListDTO(store=store_dto, invoices=invoice_dto_list)
 
     @classmethod
     def delete_invoice(cls):

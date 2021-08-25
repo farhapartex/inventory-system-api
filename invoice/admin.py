@@ -5,7 +5,7 @@ from invoice.models import Invoice, InvoiceItem
 
 @admin.register(Invoice)
 class InvoiceAdmin(admin.ModelAdmin):
-    list_display = ("id", "invoice_number", "date", "amount", "is_paid", "paid_on")
+    list_display = ("id", "store", "invoice_number", "date", "amount", "is_paid", "paid_on")
 
 
 @admin.register(InvoiceItem)

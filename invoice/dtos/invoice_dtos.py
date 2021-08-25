@@ -5,6 +5,7 @@ from datetime import datetime, date
 
 from core.dtos import UserMinimalDTO
 from invoice.dtos import InvoiceItemCreateDTO, InvoiceItemMinimalDTO
+from store.dtos import StoreMinimalDTO
 
 
 class InvoiceCreateDTO(BaseModel):
@@ -43,3 +44,23 @@ class InvoiceCreateSuccessDTO(BaseModel):
     def parse_paid_on(cls, value):
         return str(value) if value else None
 
+
+class InvoiceMinimalDTO(BaseModel):
+    total_products: int
+    amount: float
+    is_paid: bool = None
+    date: date
+    paid_on: date = None
+
+    @validator("date", pre=True)
+    def parse_date(cls, value):
+        return str(value) if value else None
+
+    @validator("paid_on", pre=True)
+    def parse_paid_on(cls, value):
+        return str(value) if value else None
+
+
+class InvoiceListDTO(BaseModel):
+    store: StoreMinimalDTO
+    invoices: List[InvoiceMinimalDTO]
