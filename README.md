@@ -16,3 +16,19 @@ more feature will be added soon ...
 ## Swagger API Doc
 
 http://localhost:8000/swagger/
+
+## Project setup process:
+
+* Clone from this repository
+* Create virtual environment and turn it on (Suppose virtual environment name is venv)`source venv/bin/activate`
+* Create a postgresql db in your machine
+* Create a file called `local_settings.json`, copy all things from `sample_local_settings.json` file to `local_settings.json`
+* In the `local_settings.json` file, set proper data (Ex. DB info)
+* Install packages by `pip install -r requirements.txt`
+* Start server `python manage.py runserver`
+
+### Test case
+* Run test cases `python manage.py test`
+
+### Postman collection
+A postman collection added for test purpose
