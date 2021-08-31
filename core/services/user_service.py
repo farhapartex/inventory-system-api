@@ -24,10 +24,10 @@ class UserService:
 
     @classmethod
     def _get_user_by_email_username(cls, *, user_id: int = None, identifier: str = None) -> User:
-        if id is not None:
+        if user_id is not None:
             user = User.objects.filter(id=user_id, is_active=True, is_deleted=False).first()
         else:
-            user = User.objects.filter(Q(username=identifier) | Q(email=identifier) & Q(is_active=True) & Q(is_deleted=False)).first()
+            user = User.objects.filter(username=identifier, is_active=True, is_deleted=False).first()
 
         return user
 
@@ -42,6 +42,7 @@ class UserService:
     @classmethod
     def get_user_instance(cls, *, user_id: int = None, identifier: str = None) -> User:
         user = cls._get_user_by_email_username(user_id=user_id, identifier=identifier)
+        print("User ", user)
         if user is None:
             raise UserNotFoundException("User does not exists")
         return user
@@ -65,7 +66,7 @@ class UserService:
         user.set_password(request_data.password)
         user.save()
 
-        if request.user.role == RoleEnum.OWNER.name:
+        if request.user.is_anonymous is False and request.user.role == RoleEnum.OWNER.name:
             trigger_create_employee.send(sender=user.__class__, request=request, employee=user, store=request.user.store)
 
         user_dto = UserDTO(

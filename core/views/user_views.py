@@ -20,15 +20,16 @@ class UserRegistrationView(views.APIView):
         try:
             data['role'] = RoleEnum.OWNER.name
             registration_dto = UserRegistrationDTO.parse_obj(data)
-            response: UserRegistrationSuccessDTO = UserService.create_user(registration_dto)
+            response: UserRegistrationSuccessDTO = UserService.create_user(request=request, request_data=registration_dto)
         except ValidationError as error:
+            logger.error(str(error))
             return Response(error.errors(), status=status.HTTP_400_BAD_REQUEST)
         except UserExistsException as error:
             logger.error(str(error.details))
             error_dto = ErrorDTO(details=error.details)
-            return Response(error_dto.dict(), status=status.HTTP_400_BAD_REQUEST)
+            return Response(error_dto.dict(), status=status.HTTP_406_NOT_ACCEPTABLE)
 
-        return Response(response.dict(), status=status.HTTP_200_OK)
+        return Response(response.dict(), status=status.HTTP_201_CREATED)
 
 
 class VerifyUserAccountView(views.APIView):

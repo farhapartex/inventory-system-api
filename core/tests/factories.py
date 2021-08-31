@@ -25,6 +25,7 @@ class UserFactory(factory.django.DjangoModelFactory):
     first_name = factory.LazyAttribute(lambda _: fake.first_name())
     last_name = factory.LazyAttribute(lambda _: fake.last_name())
     role = factory.LazyAttribute(lambda _: RoleEnum.ADMIN.name)
+    is_active = factory.LazyAttribute(lambda _: False)
 
 
 class UserAuthCodeFactory(factory.django.DjangoModelFactory):
