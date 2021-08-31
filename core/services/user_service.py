@@ -24,10 +24,10 @@ class UserService:
 
     @classmethod
     def _get_user_by_email_username(cls, *, user_id: int = None, identifier: str = None) -> User:
-        if id is not None:
+        if user_id is not None:
             user = User.objects.filter(id=user_id, is_active=True, is_deleted=False).first()
         else:
-            user = User.objects.filter(Q(username=identifier) | Q(email=identifier) & Q(is_active=True) & Q(is_deleted=False)).first()
+            user = User.objects.filter(username=identifier, is_active=True, is_deleted=False).first()
 
         return user
 
@@ -65,7 +65,7 @@ class UserService:
         user.set_password(request_data.password)
         user.save()
 
-        if request.user.role == RoleEnum.OWNER.name:
+        if request.user.is_anonymous is False and request.user.role == RoleEnum.OWNER.name:
             trigger_create_employee.send(sender=user.__class__, request=request, employee=user, store=request.user.store)
 
         user_dto = UserDTO(
@@ -88,7 +88,7 @@ class UserService:
 
     @classmethod
     def verify_user_account(cls, request_data: AccountVerifyDTO) -> AccountVerifySuccessDTO:
-        instance: User = cls.get_user_instance(identifier=request_data.email)
+        instance: User = User.get_instance({"email": request_data.email})
 
         if instance.is_active and instance.is_verified:
             raise UserAlreadyActiveException("User already active and verified")
