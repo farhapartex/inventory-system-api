@@ -59,3 +59,36 @@ class UserRegistrationTestCase(APITestCase):
         }
         response = self.client.post(self.url, data, format="json")
         self.assertEqual(response.status_code, status.HTTP_406_NOT_ACCEPTABLE)
+
+
+class UserAuthCodeTestCase(APITestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.url = reverse("user-account-verify")
+        cls.registration_url = reverse('user-registration')
+
+    def test_with_valid_user(self):
+        email = fake.unique.email()
+        data = {
+            "first_name": fake.first_name(),
+            "last_name": fake.last_name(),
+            "email": email,
+            "password": fake.pystr()
+        }
+
+        response = self.client.post(self.registration_url, data, format="json")
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        auth_code = UserAuthCode.objects.filter(user__email=email, is_used=False).first()
+
+        data = {
+            "email": email,
+            "code": auth_code.code
+        }
+
+        response = self.client.post(self.url, data, format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        user = User.get_instance({"email": email})
+        self.assertEqual(user.is_verified, True)
+        self.assertEqual(user.is_active, True)

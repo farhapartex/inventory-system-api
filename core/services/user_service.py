@@ -42,7 +42,6 @@ class UserService:
     @classmethod
     def get_user_instance(cls, *, user_id: int = None, identifier: str = None) -> User:
         user = cls._get_user_by_email_username(user_id=user_id, identifier=identifier)
-        print("User ", user)
         if user is None:
             raise UserNotFoundException("User does not exists")
         return user
@@ -89,7 +88,7 @@ class UserService:
 
     @classmethod
     def verify_user_account(cls, request_data: AccountVerifyDTO) -> AccountVerifySuccessDTO:
-        instance: User = cls.get_user_instance(identifier=request_data.email)
+        instance: User = User.get_instance({"email": request_data.email})
 
         if instance.is_active and instance.is_verified:
             raise UserAlreadyActiveException("User already active and verified")
