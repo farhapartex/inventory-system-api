@@ -13,9 +13,10 @@ and currently it has few features which are:
 
 more feature will be added soon ...
 
-## Swagger API Doc
-
-http://localhost:8000/swagger/
+### Here I used:
+* Oauth2 for login
+* Pydantic DTO class for serialization and deserialization
+* Faker & Factory boy for testing
 
 ## Project setup process:
 
@@ -25,10 +26,16 @@ http://localhost:8000/swagger/
 * Create a file called `local_settings.json`, copy all things from `sample_local_settings.json` file to `local_settings.json`
 * In the `local_settings.json` file, set proper data (Ex. DB info)
 * Install packages by `pip install -r requirements.txt`
-* Start server `python manage.py runserver`
+* Migrate database `python manage.py migrate`
+* Create Oauth2 application from `http://localhost:8000/oauth/applications/`
+* Use the created client id & client secret during login
 
 ### Test case
 * Run test cases `python manage.py test`
+
+## Swagger API Doc
+
+http://localhost:8000/swagger/
 
 ### Postman collection
 A postman collection added for test purpose
